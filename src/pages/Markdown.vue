@@ -1,11 +1,14 @@
 <template>
-  <h1 class="text-center text-2xl my-3"> Markdown </h1>
-  <section class="flex w-full p-3 mx-auto bg-gray-50 h-screen">
-    <article class="left w-1/2  bg-gray-100 mr-2">
-      <textarea @input="update" class="w-full h-full p-2" :value="text"> </textarea>
-    </article>
-    <article class="right w-1/2 p-2 bg-blue-50 ml-2" v-html="markedText"></article>
-  </section>
+  <div>
+    <section class="flex w-full p-3 mx-auto bg-gray-50 h-screen bg-gray-700">
+      <article class="left w-1/2  bg-gray-100 mr-2">
+        <textarea placeholder="Start typing..." @input="update" class="w-full bg-gray-600 text-white h-full p-2" :value="text"> 
+          
+        </textarea>
+      </article>
+      <article class="right w-1/2 p-2 bg-blue-50 ml-2" v-html="markedText"></article>
+    </section>
+  </div>
 </template>
 
 <script>
@@ -15,7 +18,7 @@ export default {
   mixins: [debounce],
   data() {
     return {
-      text: 'sdsdf',
+      text: `<p class="text-9xl bg-gradient-to-t p-4 rounded text-white from-green-400 to-yellow-400">Try ME!</p>`,
       timeout: null,
     }
   },

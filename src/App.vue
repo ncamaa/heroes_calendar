@@ -1,14 +1,20 @@
 <template>
-  <div class="mx-auto">
-    <AppHeader @toggle-login-modal="toggleLoginModal()" />
-    <div class="app">
-      <router-view>
-      </router-view>
+  <div class="flex" id="generalWrapper">
+    <AppHeader />
+    
+    <div class="app h-screen">
+      <div class="w-full h-full bg-gray-700">
+        <router-view v-slot="{ Component }">
+          <transition name="no-mode-fade" mode="out-in">
+            <component :is="Component"></component>
+          </transition>
+        </router-view>
+      </div>
     </div>
   </div>
   <teleport to="body">
-    <transition name="fade-normal">
-      <LoginModal v-if="showLoginModal" @toggle-login-modal="toggleLoginModal()" />
+    <transition name="no-mode-fade" mode="out-in">
+      <LoginModal v-if="$store.state.showLoginModal" />
     </transition>
   </teleport>
 </template>
@@ -20,40 +26,54 @@ export default {
   components: {AppHeader, LoginModal},
   methods: {
     toggleLoginModal() {
-      this.showLoginModal = !this.showLoginModal
+      this.$store.commit('toggleLoginModal')
     }
   },
   data() {
     return {
       showLoginModal: false,
       currentUser: {},
-      isUserLoggedIn: false
+      isUserLoggedIn: false,
+      store: this.$store.state
     }
   },
   mounted() {
+    console.log(this.$store.state);
     firebase.auth().onAuthStateChanged( (user)=> {
       if (user) {
-        this.currentUser = user
-        this.isUserLoggedIn = true
-        this.showLoginModal = false
+        // this.currentUser = user
+        // this.isUserLoggedIn = true
+        this.$store.commit('setShowLoginModal', false)
+        this.$store.commit('setIsLoggedIn', true)
+        this.$store.commit('setCurrentUser', user)
+        console.log(this.$store.state)
       } else {
-        this.currentUser = {}
-        this.isUserLoggedIn = false
+        this.$store.commit('setIsLoggedIn', false)
+        this.$store.commit('setCurrentUser', {})
+        // this.currentUser = {}
+        // this.isUserLoggedIn = false
       }
     } )
   }
 }
 </script>
 
-<style>
-  .fade-normal-enter-active,
-  .fade-normal-leave-active {
-    transition: all 0.5s ease;
+<style lang="scss">
+
+  #generalWrapper {
+    .app {
+      width: calc(100% - 150px);
+      margin-left: 150px;
+      path {
+        stroke-width: 1.5px;
+      }
+    }
+  }
+  .no-mode-fade-enter-active, .no-mode-fade-leave-active {
+    transition: opacity .1s
   }
 
-  .fade-normal-enter-from,
-  .fade-normal-leave-to {
-    opacity: 0;
-    top: -50px;
+  .no-mode-fade-enter-from, .no-mode-fade-leave-to {
+    opacity: 0
   }
 </style>

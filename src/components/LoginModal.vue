@@ -48,13 +48,13 @@ export default {
       firebase.auth().signInWithPopup(provider).then(function() {
         this.isLoading = false  
       }).catch(function(error) {
-        this.loginErrorMessage = error.message
+        console.log(error);
         this.isLoading = false
       })
     },
     clickedOnBackground(target) {
       if( target.classList.contains('modalBackground')) {
-        this.$emit('toggle-login-modal')
+        this.$store.commit('toggleLoginModal')
       }
     },
     submitForm() {
@@ -68,7 +68,7 @@ export default {
       .catch((error) => {
         this.isLoading = false
         this.loginErrorMessage = error.message
-      });
+      })
     }
   }
 }

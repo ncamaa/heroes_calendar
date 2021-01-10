@@ -1,42 +1,52 @@
 <template>
-  <h1 class="my-4 text-center text-xl">Calculator</h1>
-  <div class="wrapper">
-    <div id="calculator" class="w-10/12 mx-auto p-3 max-w-md">
-      <div class="border-gray-400 border-b text-gray-800 text-3xl w-full p-3 mb-1 flex justify-end">
-      {{currentValue}} </div>
-      <small class="text-gray-600 w-full p-1 mb-1 h-8 flex justify-end items-center pr-4">
-        {{showString}} </small>
-      <div class="grid gap-2 grid-cols-4">
-        <div class="numbers col-span-3">
-          <div class="grid grid-cols-3 gap-2">
-            <button @click="sendNum(num)" v-for="num in 9" :key="num" class="col-span-1" :class="defaultBtnClass">
-              {{num}}
-            </button>
-            <button class="col-span-2" :class="defaultBtnClass" @click="sendNum(0)">0</button>
-            <button class="col-span-1" :class="defaultBtnClass" @click="calculate()">=</button>
+    
+
+  <div>
+    <div class="h-screen w-full flex items-center justify-center bg-gradient-to-tr from-red-500 to-gray-700">
+      <div class="rounded bg-white border-gray-300 p-4 m-4 border sm:w-96 mx-auto">
+        
+        <div class="wrapper">
+          <div id="calculator" class="mx-auto p-3 max-w-md">
+            <div class="border-gray-400 border-b text-gray-800 text-3xl w-full p-3 mb-1 flex justify-end">
+            {{currentValue}} </div>
+            <small class="text-gray-600 w-full p-1 mb-1 h-8 flex justify-end items-center pr-4">
+              {{showString}} </small>
+            <div class="grid gap-2 grid-cols-4">
+              <div class="numbers col-span-3">
+                <div class="grid grid-cols-3 gap-2">
+                  <button @click="sendNum(num)" v-for="num in 9" :key="num" class="col-span-1" :class="defaultBtnClass+' btn-'+num">
+                    {{num}}
+                  </button>
+                  <button class="col-span-2" :class="defaultBtnClass" @click="sendNum(0)">0</button>
+                  <button class="col-span-1" :class="defaultBtnClass" @click="calculate()">=</button>
+                </div>
+              </div>
+              <div class="operations grid grid-cols-1 gap-2">
+                <button
+                   v-for="opr in operations"
+                   :key="opr"
+                   class="col-span-1"
+                   :class="defaultBtnClass"
+                   @click="setOperator(opr)">
+                  {{opr}}
+                </button>
+              </div>
+            </div>
+            <div class="grid grid-gap-2 grid-cols-1 mt-2">
+              <button @click="reset()" class="col-span-2" :class="defaultBtnClass">C</button>
+            </div>
           </div>
         </div>
-        <div class="operations grid grid-cols-1 gap-2">
-          <button
-             v-for="opr in operations"
-             :key="opr"
-             class="col-span-1"
-             :class="defaultBtnClass"
-             @click="setOperator(opr)">
-            {{opr}}
-          </button>
-        </div>
-      </div>
-      <div class="grid grid-gap-2 grid-cols-1 mt-2">
-        <button @click="reset()" class="col-span-2" :class="defaultBtnClass">C</button>
+
       </div>
     </div>
   </div>
+    
 
 </template>
 
 <script>
-import {ref} from 'vue'
+import {ref, onMounted, onUnmounted} from 'vue'
 export default {
   setup() {
     //vars
@@ -95,6 +105,71 @@ export default {
         // firstNum.value     = currentValue.value
       }
     }
+
+    const isNumeric = (n) => {
+      return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
+    const waveElement = (catchedBtn) => {
+      if (catchedBtn) {
+        catchedBtn.classList.add('bg-blue-100')
+        setTimeout(() => {
+          catchedBtn.classList.remove('bg-blue-100')
+        }, 100);
+      }
+    }
+
+    const userPressedKeyboard = (e)=> {
+      let keyPressed = e.key
+      if (isNumeric(keyPressed)) {
+        sendNum(e.key)
+      } else {
+        switch (e.code) {
+          case 'NumpadMultiply':
+            setOperator('*')
+            keyPressed = '*'
+            break;
+          case 'NumpadDivide':
+            setOperator('/')
+            keyPressed = '/'
+            break;
+          case 'NumpadAdd':
+            setOperator('+')
+            keyPressed = '+'
+            break;
+          case 'NumpadSubtract':
+            setOperator('-')
+            keyPressed = '-'
+            break;
+          case 'NumpadEnter':
+            calculate()
+            keyPressed = '='
+            break;
+          case 'Enter':
+            calculate()
+            keyPressed = '='
+            break;
+          case 'KeyC':
+            reset()
+            keyPressed = 'C'
+            break;
+          
+          default:
+            break;
+        }
+      }
+
+      document.querySelectorAll('#calculator button').forEach((btn)=> {
+        if (btn.innerText.trim() == keyPressed) {
+          waveElement(btn)
+        }
+      })
+        
+    }
+
+    onMounted(() => window.addEventListener('keydown', userPressedKeyboard))
+
+    onUnmounted(() => window.removeEventListener('keydown', userPressedKeyboard))
 
     return {
       operations,

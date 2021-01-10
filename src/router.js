@@ -6,6 +6,9 @@ import Home from './pages/Home'
 import Markdown from './pages/Markdown'
 import Slider from './pages/Slider'
 import Calc from './pages/Calc'
+import Modals from './pages/Modals'
+import Chat from './pages/Chat'
+import UserCrud from './pages/UserCrud'
 
 const routes = [
   { path: '/',       component:Home },
@@ -14,6 +17,9 @@ const routes = [
   { path: '/markdown',  component:Markdown },
   { path: '/slider',  component:Slider },
   { path: '/calculator',  component:Calc },
+  { path: '/modals',  component:Modals },
+  { path: '/chat',  component:Chat },
+  { path: '/user-crud',  component:UserCrud },
 ]
 
 const router = createRouter({
