@@ -46,8 +46,11 @@
             </tr>
           </thead>
           <tbody class="text-center">
-            <tr v-for="user in state.users" :key="user._id">
-              <td class="p-3 bg-gray-700">{{ user._id }}</td>
+            <tr v-for="(user, userIndex) in state.users" :key="user._id">
+              <td class="p-3 bg-gray-700 relative group">
+                <span class="group-hover:opacity-0 transition-opacity">{{ user._id }}</span>
+                <XCircle class="absolute cursor-pointer m-auto w-10 opacity-0 transition-all group-hover:opacity-100 fill-black h-10 text-pink-500 rounded-full top-0 bottom-0 left-0 right-0 hover:text-green-400" @click="removeEl(user._id, userIndex)" />
+              </td>
               <td class="p-3">
                 <img
                   :src="user.avatar"
@@ -141,6 +144,7 @@ import { computed, onMounted, reactive, ref } from "vue";
 import axios from "../plugins/axios";
 import ChevronLeft from "../../node_modules/heroicons/vue/outline/ChevronLeft";
 import ChevronRight from "../../node_modules/heroicons/vue/outline/ChevronRight";
+import XCircle from "../../node_modules/heroicons/vue/outline/XCircle";
 import UserAdd from "../../node_modules/heroicons/vue/outline/UserAdd";
 import Modal from "../components/Modal";
 axios.defaults.baseURL = 'https://crudcrud.com/api/aaaed02c82a24b7cb9e7cb6fc07e4280'
@@ -190,6 +194,14 @@ export default {
       isModalOpen.value = false
       state.form.email, state.form.first_name, state.form.last_name, state.form.avatar = ''
     }
+    
+    async function removeEl(id, userIndex) {
+      await axios.delete('/users/'+id)
+      state.users.splice(userIndex, 1);
+      // state.users.push(data)
+      // isModalOpen.value = false
+      // state.form.email, state.form.first_name, state.form.last_name, state.form.avatar = ''
+    }
 
     return {
       state,
@@ -197,12 +209,14 @@ export default {
       prev,
       ChevronLeft,
       ChevronRight,
+      XCircle,
       isFirstPage,
       isLastPage,
       Modal,
       UserAdd,
       isModalOpen,
-      submit
+      submit,
+      removeEl
     };
   },
 };
@@ -237,5 +251,8 @@ table {
 }
 .blur {
   filter: blur(.5)
+}
+.fill-black {
+  fill: theme('colors.gray.900')
 }
 </style>
