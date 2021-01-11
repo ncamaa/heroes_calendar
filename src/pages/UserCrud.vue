@@ -48,15 +48,11 @@
           <tbody class="text-center">
             <tr v-for="(user, userIndex) in state.users" :key="user._id">
               <td class="p-3 bg-gray-700 relative group">
-                <span class="group-hover:opacity-0 transition-opacity">{{ user._id }}</span>
+                <span class="group-hover:opacity-0 transition-opacity">{{ user._id.substring(0, 4) + '...' }}</span>
                 <XCircle class="absolute cursor-pointer m-auto w-10 opacity-0 transition-all group-hover:opacity-100 fill-black h-10 text-pink-500 rounded-full top-0 bottom-0 left-0 right-0 hover:text-green-400" @click="removeEl(user._id, userIndex)" />
               </td>
               <td class="p-3">
-                <img
-                  :src="user.avatar"
-                  class="rounded-full mx-auto w-20 h-20"
-                  :alt="user.first_name"
-                />
+                <avataaars></avataaars>
               </td>
               <td class="p-3">{{ user.first_name }}</td>
               <td class="p-3">{{ user.last_name }}</td>
@@ -111,17 +107,6 @@
               v-model="state.form.email"
             />
           </div>
-          
-          <div class="py-2 mb-1">
-            <label for="avatar" class="mb-2 hidden"> Avatar </label>
-            <input
-              type="text"
-              name="avatar"
-              class="p-3 rounded w-full bg-gray-700 outline-none border-2 border-gray-700 hover:border-pink-500 focus:border-pink-500  "
-              placeholder="Avatar"
-              v-model="state.form.avatar"
-            />
-          </div>
 
           <button
             class="prev p-2 hover:text-green-400 hover:border-green-400 text-pink-500 bg-gray-800 mh-16 rounded my-auto w-full flex items-center justify-center border-pink-500 border-2 border-solid"
@@ -147,36 +132,35 @@ import ChevronRight from "../../node_modules/heroicons/vue/outline/ChevronRight"
 import XCircle from "../../node_modules/heroicons/vue/outline/XCircle";
 import UserAdd from "../../node_modules/heroicons/vue/outline/UserAdd";
 import Modal from "../components/Modal";
-axios.defaults.baseURL = 'https://crudcrud.com/api/aaaed02c82a24b7cb9e7cb6fc07e4280'
+import avataaars from "../../node_modules/vuejs-avataaars/src/Avataaars";
+axios.defaults.baseURL = 'https://crudcrud.com/api/c5352e3eee6f4dd9a8060bbcedcb7548'
 export default {
   setup() {
     const isModalOpen = ref(false);
 
     const state = reactive({
+      // randomAvatarNumber: Math.floor(Math.random() * 12) + 1,
       users: [],
       page: 1,
       form: {
         first_name: '',
         last_name: '',
         email: '',
-        avatar: '',
       }
     });
 
-    const isLastPage = computed(() => state.page === state.users.total_pages);
+    const isLastPage = computed(() => state.page === 1);
     const isFirstPage = computed(() => state.page === 1);
 
     onMounted(async () => {
       const { data } = await axios.get("/users");
       state.users = data;
-      state.page = data.page;
     });
 
     async function next() {
       if (!isLastPage.value) {
         const { data } = await axios.get("/users?page=" + (state.page + 1));
         state.users = data;
-        state.page = data.page;
       }
     }
 
@@ -184,7 +168,6 @@ export default {
       if (!isFirstPage.value) {
         const { data } = await axios.get("/users?page=1");
         state.users = data;
-        state.page = data.page;
       }
     }
     
@@ -216,7 +199,8 @@ export default {
       UserAdd,
       isModalOpen,
       submit,
-      removeEl
+      removeEl,
+      avataaars
     };
   },
 };
